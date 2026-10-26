@@ -26,7 +26,7 @@ public class DummyProductService implements  IProductService{
     @Override
     public Product getProductById(Long id) {
         try {
-            ResponseEntity<DummyJsonProductDto> dummyJsonProductDto= restTemplate.getForEntity("https://dummyjson.com/products/{id}", DummyJsonProductDto.class, id);
+            ResponseEntity<DummyJsonProductDto> dummyJsonProductDto = restTemplate.getForEntity("https://dummyjson.com/products/{id}", DummyJsonProductDto.class, id);
             if (dummyJsonProductDto.getStatusCode().is2xxSuccessful()) {
                 return from(dummyJsonProductDto.getBody());
             }

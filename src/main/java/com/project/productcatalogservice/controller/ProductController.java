@@ -8,6 +8,7 @@ import com.project.productcatalogservice.service.DummyProductService;
 import com.project.productcatalogservice.service.IProductService;
 import com.project.productcatalogservice.service.PitchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,12 +24,14 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    private IProductService productService;
-    private PitchService pitchService;
+    private final IProductService productService;
+    private final PitchService pitchService;
+    private final IProductService supplierService;
 
-    public ProductController(IProductService productService, PitchService pitchService) {
+    public ProductController(IProductService productService, PitchService pitchService, @Qualifier("dummyProductService") IProductService supplierService) {
         this.productService = productService;
         this.pitchService = pitchService;
+        this.supplierService = supplierService;
     }
 
     @GetMapping
@@ -68,7 +71,8 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Product product = productService.getProductById(id);
+//        Product product = productService.getProductById(id);
+        Product product = supplierService.getProductById(id);
         if (product == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

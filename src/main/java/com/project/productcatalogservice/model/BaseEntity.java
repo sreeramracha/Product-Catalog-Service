@@ -1,10 +1,7 @@
 package com.project.productcatalogservice.model;
 
 import com.project.productcatalogservice.model.enums.State;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +17,7 @@ public abstract class BaseEntity {
 
     private Date createdAt;
     private Date updatedAt;
+
+    @Enumerated(value = EnumType.STRING)
     private State state;
 }

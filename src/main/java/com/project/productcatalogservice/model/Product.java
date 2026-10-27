@@ -19,7 +19,7 @@ public class Product extends BaseEntity {
     private String description;
     private String imageUrl;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;
 }

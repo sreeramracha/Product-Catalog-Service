@@ -3,12 +3,15 @@ package com.project.productcatalogservice.service;
 import com.project.productcatalogservice.dto.DummyJsonProductDto;
 import com.project.productcatalogservice.model.Category;
 import com.project.productcatalogservice.model.Product;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
+//@Service("myDummyService") -> call this name in Qualifier
 @Service
 public class DummyProductService implements  IProductService{
 
@@ -25,6 +28,7 @@ public class DummyProductService implements  IProductService{
 
     @Override
     public Product getProductById(Long id) {
+        log.info("Get product from 3rd party service: " + id);
         try {
             ResponseEntity<DummyJsonProductDto> dummyJsonProductDto = restTemplate.getForEntity("https://dummyjson.com/products/{id}", DummyJsonProductDto.class, id);
             if (dummyJsonProductDto.getStatusCode().is2xxSuccessful()) {

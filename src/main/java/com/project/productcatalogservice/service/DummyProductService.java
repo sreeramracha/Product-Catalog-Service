@@ -1,6 +1,7 @@
 package com.project.productcatalogservice.service;
 
 import com.project.productcatalogservice.dto.DummyJsonProductDto;
+import com.project.productcatalogservice.dto.ProductDto;
 import com.project.productcatalogservice.model.Category;
 import com.project.productcatalogservice.model.Product;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,16 @@ public class DummyProductService implements  IProductService{
             return null;
         }
 
+    }
+
+    @Override
+    public Product createProduct(ProductDto productDto) {
+        return null;
+    }
+
+    @Override
+    public boolean deleteProductById(Long id) {
+        return false;
     }
 
     public Product from(DummyJsonProductDto dto){

@@ -1,15 +1,22 @@
 package com.project.productcatalogservice.service;
 
 import com.project.productcatalogservice.dto.DummyJsonProductDto;
+import com.project.productcatalogservice.dto.DummyJsonProductListDto;
 import com.project.productcatalogservice.dto.ProductDto;
 import com.project.productcatalogservice.model.Category;
 import com.project.productcatalogservice.model.Product;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 //@Service("myDummyService") -> call this name in Qualifier
@@ -51,6 +58,23 @@ public class DummyProductService implements  IProductService{
     @Override
     public boolean deleteProductById(Long id) {
         return false;
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        ResponseEntity<DummyJsonProductListDto> response = restTemplate.getForEntity("https://dummyjson.com/products?limit=0", DummyJsonProductListDto.class);
+
+        List<Product> products = new ArrayList<>();
+        for (DummyJsonProductDto dto : response.getBody().getProducts()) {
+            products.add(from(dto));
+        }
+
+        return products;
+    }
+
+    @Override
+    public Page<Product> getProductInPriceRange(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        return null;
     }
 
     public Product from(DummyJsonProductDto dto){

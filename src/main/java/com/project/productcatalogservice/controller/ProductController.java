@@ -7,31 +7,42 @@ import com.project.productcatalogservice.model.Product;
 import com.project.productcatalogservice.service.IProductService;
 import com.project.productcatalogservice.service.PitchService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
-    private final IProductService storageService;
+    private final IProductService productService;
     private final PitchService pitchService;
     private final IProductService supplierService;
 
-    public ProductController(IProductService storageService, PitchService pitchService, @Qualifier("dummyProductService") IProductService supplierService) {
-        this.storageService = storageService;
+    public ProductController(IProductService productService, PitchService pitchService, @Qualifier("dummyProductService") IProductService supplierService) {
+        this.productService = productService;
         this.pitchService = pitchService;
         this.supplierService = supplierService;
     }
 
     @GetMapping
     // API to get all products
-    List<Product> getAllProducts(){
-        return List.of();
+    List<ProductDto> getAllProducts(){
+        List<Product> products = productService.getAllProducts();
+        List<ProductDto> productDtos = new ArrayList<>();
+        for(Product product : products){
+            productDtos.add(from(product));
+        }
+
+        return productDtos;
     }
 
     @GetMapping("/printing")
@@ -65,7 +76,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Product product = storageService.getProductById(id);
+        Product product = productService.getProductById(id);
 //        Product product = supplierService.getProductById(id);
         if (product == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -95,7 +106,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Product product = storageService.getProductById(id);
+        Product product = productService.getProductById(id);
         if (product == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -109,7 +120,7 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto){
-        Product product = storageService.createProduct(productDto);
+        Product product = productService.createProduct(productDto);
 
         return new ResponseEntity<>(from(product), HttpStatus.CREATED);
     }
@@ -117,12 +128,23 @@ public class ProductController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id){
 
-        boolean isDeleted = storageService.deleteProductById(id);
+        boolean isDeleted = productService.deleteProductById(id);
         if (isDeleted){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }else{
             return new ResponseEntity<>("Not Found", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/search")
+    public PagedModel<ProductDto> getProductsInPriceRange(@RequestParam(required = false) BigDecimal minPrice,
+                                              @RequestParam(required = false) BigDecimal maxPrice,
+                                              Pageable pageable){
+
+        Page<ProductDto> products = productService.getProductInPriceRange(minPrice, maxPrice, pageable).map(x -> from(x));
+
+        return new PagedModel<>(products);
+
     }
 
 }

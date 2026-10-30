@@ -7,6 +7,8 @@ import com.project.productcatalogservice.model.Product;
 import com.project.productcatalogservice.model.enums.State;
 import com.project.productcatalogservice.repository.CategoryRepository;
 import com.project.productcatalogservice.repository.ProductRepository;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
@@ -21,17 +23,19 @@ import java.util.Optional;
 @Primary
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class StorageProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+//    private int maxCount; // @AllArgsConstructor -> will create for this as well but we need to create for final variables
 
-    public StorageProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.productMapper = productMapper;
-    }
+//    public StorageProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
+//        this.productRepository = productRepository;
+//        this.categoryRepository = categoryRepository;
+//        this.productMapper = productMapper;
+//    }
 
     @Override
     public Product getProductById(Long id) {

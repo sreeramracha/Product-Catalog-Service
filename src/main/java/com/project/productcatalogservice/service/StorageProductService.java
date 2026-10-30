@@ -1,6 +1,7 @@
 package com.project.productcatalogservice.service;
 
 import com.project.productcatalogservice.dto.ProductDto;
+import com.project.productcatalogservice.mapper.ProductMapper;
 import com.project.productcatalogservice.model.Category;
 import com.project.productcatalogservice.model.Product;
 import com.project.productcatalogservice.model.enums.State;
@@ -21,12 +22,15 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class StorageProductService implements IProductService {
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
-    public StorageProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public StorageProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.productMapper = productMapper;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class StorageProductService implements IProductService {
 
     @Override
     public Product createProduct(ProductDto productDto) {
-        Product product = from(productDto);
+        Product product = productMapper.toEntity(productDto);
         product.setCategory(findOrCreateCtegory(product.getCategory()));
         product.setUpdatedAt(new Date());
         product.setCreatedAt(new Date());
@@ -91,22 +95,4 @@ public class StorageProductService implements IProductService {
         return productRepository.findByPriceBetweenAndState(minPrice, maxPrice, State.ACTIVE, pageable);
     }
 
-    private Product from(ProductDto dto) {
-        Product product = new Product();
-
-        product.setId(dto.getId());
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
-        product.setImageUrl(dto.getImageUrl());
-
-        if (dto.getCategory() != null) {
-            Category category = new Category();
-            category.setName(dto.getCategory().getName());
-            category.setDescription(dto.getCategory().getDescription());
-            product.setCategory(category);
-        }
-
-        return product;
-    }
 }

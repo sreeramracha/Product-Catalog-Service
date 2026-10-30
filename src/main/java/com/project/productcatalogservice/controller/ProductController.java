@@ -3,6 +3,7 @@ package com.project.productcatalogservice.controller;
 import com.project.productcatalogservice.dto.CategoryDto;
 import com.project.productcatalogservice.dto.ProductDto;
 import com.project.productcatalogservice.dto.ProductPitchDto;
+import com.project.productcatalogservice.mapper.ProductMapper;
 import com.project.productcatalogservice.model.Product;
 import com.project.productcatalogservice.service.IProductService;
 import com.project.productcatalogservice.service.PitchService;
@@ -26,11 +27,13 @@ public class ProductController {
     private final IProductService productService;
     private final PitchService pitchService;
     private final IProductService supplierService;
+    private final ProductMapper productMapper;
 
-    public ProductController(IProductService productService, PitchService pitchService, @Qualifier("dummyProductService") IProductService supplierService) {
+    public ProductController(IProductService productService, PitchService pitchService, @Qualifier("dummyProductService") IProductService supplierService, ProductMapper productMapper) {
         this.productService = productService;
         this.pitchService = pitchService;
         this.supplierService = supplierService;
+        this.productMapper = productMapper;
     }
 
     @GetMapping
@@ -39,7 +42,7 @@ public class ProductController {
         List<Product> products = productService.getAllProducts();
         List<ProductDto> productDtos = new ArrayList<>();
         for(Product product : products){
-            productDtos.add(from(product));
+            productDtos.add(productMapper.toDto(product));
         }
 
         return productDtos;
@@ -82,22 +85,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(from(product), HttpStatus.OK);
-    }
-
-    private ProductDto from(Product product){
-        ProductDto productDto = new ProductDto();
-        productDto.setName(product.getName());
-        productDto.setPrice(product.getPrice());
-        productDto.setDescription(product.getDescription());
-
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setName(product.getCategory().getName());
-        categoryDto.setDescription(product.getCategory().getDescription());
-        productDto.setCategory(categoryDto);
-
-
-        return productDto;
+        return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/pitch")
@@ -122,7 +110,7 @@ public class ProductController {
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto){
         Product product = productService.createProduct(productDto);
 
-        return new ResponseEntity<>(from(product), HttpStatus.CREATED);
+        return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
@@ -141,7 +129,7 @@ public class ProductController {
                                               @RequestParam(required = false) BigDecimal maxPrice,
                                               Pageable pageable){
 
-        Page<ProductDto> products = productService.getProductInPriceRange(minPrice, maxPrice, pageable).map(x -> from(x));
+        Page<ProductDto> products = productService.getProductInPriceRange(minPrice, maxPrice, pageable).map(x -> productMapper.toDto(x));
 
         return new PagedModel<>(products);
 

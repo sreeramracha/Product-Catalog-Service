@@ -163,4 +163,9 @@ public class ProductController {
 
     }
 
+    @GetMapping("/healthcheck")
+    public ResponseEntity<String> healthCheck(){
+        return new ResponseEntity<>("Up and running", HttpStatus.OK);
+    }
+
 }

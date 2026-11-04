@@ -56,6 +56,16 @@ public class DummyProductService implements  IProductService{
     }
 
     @Override
+    public Product replaceProduct(Long id, ProductDto productDto) {
+        throw new UnsupportedOperationException("Updating products from the external service is not supported");
+    }
+
+    @Override
+    public Product patchProduct(Long id, ProductDto patch) {
+        throw new UnsupportedOperationException("Updating products from the external service is not supported");
+    }
+
+    @Override
     public boolean deleteProductById(Long id) {
         return false;
     }

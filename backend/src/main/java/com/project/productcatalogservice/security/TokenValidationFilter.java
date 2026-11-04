@@ -61,7 +61,8 @@ public class TokenValidationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (request.getMethod().equals("DELETE") && !"ADMIN".equals(authUserDto.getRole())) {
+//        if (request.getMethod().equals("DELETE") && !"ADMIN".equals(authUserDto.getRole())) {
+        if (authUserDto == null || !"ADMIN".equals(authUserDto.getRole())) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return;
         }

@@ -7,7 +7,6 @@ import com.project.productcatalogservice.model.Product;
 import com.project.productcatalogservice.model.enums.State;
 import com.project.productcatalogservice.repository.CategoryRepository;
 import com.project.productcatalogservice.repository.ProductRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -50,12 +49,70 @@ public class StorageProductService implements IProductService {
 
     @Override
     public Product createProduct(ProductDto productDto) {
+
         Product product = productMapper.toEntity(productDto);
         product.setCategory(findOrCreateCtegory(product.getCategory()));
         product.setUpdatedAt(new Date());
         product.setCreatedAt(new Date());
         product.setState(State.ACTIVE);
 
+        return productRepository.save(product);
+    }
+
+    @Override
+    public Product replaceProduct(Long id, ProductDto productDto) {
+        Product product = getProductById(id);
+        if (product == null) {
+            return null;
+        }
+
+        Product replacement = productMapper.toEntity(productDto);
+        product.setName(replacement.getName());
+        product.setDescription(replacement.getDescription());
+        product.setPrice(replacement.getPrice());
+        product.setImageUrl(replacement.getImageUrl());
+        product.setCategory(replacement.getCategory());
+        product.setCategory(findOrCreateCtegory(product.getCategory()));
+        product.setUpdatedAt(new Date());
+        return productRepository.save(product);
+    }
+
+    @Override
+    public Product patchProduct(Long id, ProductDto patch) {
+        Product product = getProductById(id);
+        if (product == null) {
+            return null;
+        }
+
+        Product updates = productMapper.toEntity(patch);
+        if (patch.getName() != null) {
+            product.setName(updates.getName());
+        }
+        if (patch.getDescription() != null) {
+            product.setDescription(updates.getDescription());
+        }
+        if (patch.getPrice() != null) {
+            product.setPrice(updates.getPrice());
+        }
+        if (patch.getImageUrl() != null) {
+            product.setImageUrl(updates.getImageUrl());
+        }
+        if (patch.getCategory() != null) {
+            Category updatedCategory = updates.getCategory();
+            Category existingCategory = product.getCategory();
+            if (existingCategory == null) {
+                product.setCategory(findOrCreateCtegory(updatedCategory));
+            } else {
+                if (patch.getCategory().getName() != null) {
+                    existingCategory.setName(updatedCategory.getName());
+                }
+                if (patch.getCategory().getDescription() != null) {
+                    existingCategory.setDescription(updatedCategory.getDescription());
+                }
+                product.setCategory(findOrCreateCtegory(existingCategory));
+            }
+        }
+        product.setUpdatedAt(new Date());
         return productRepository.save(product);
     }
 

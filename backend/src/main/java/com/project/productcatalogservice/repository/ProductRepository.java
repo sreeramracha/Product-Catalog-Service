@@ -22,6 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByPriceBetweenAndState(BigDecimal minPrice, BigDecimal maxPrice, State state, Pageable pageable);
 
     @Query("SELECT p FROM Product p " +
-            "LEFT JOIN FETCH p.category c")
+            "LEFT JOIN FETCH p.category c " +
+            "where p.state='ACTIVE'")
     List<Product> findAllProducts();
 }

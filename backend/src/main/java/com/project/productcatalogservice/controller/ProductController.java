@@ -1,6 +1,5 @@
 package com.project.productcatalogservice.controller;
 
-import com.project.productcatalogservice.dto.CategoryDto;
 import com.project.productcatalogservice.dto.ProductDto;
 import com.project.productcatalogservice.dto.ProductPitchDto;
 import com.project.productcatalogservice.mapper.ProductMapper;
@@ -14,7 +13,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -111,6 +109,36 @@ public class ProductController {
         Product product = productService.createProduct(productDto);
 
         return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDto> replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        if (id <= 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Product product = productService.replaceProduct(id, productDto);
+        if (product == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchProduct(@PathVariable Long id, @RequestBody ProductDto patch) {
+        if (id <= 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            Product product = productService.patchProduct(id, patch);
+            if (product == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(productMapper.toDto(product), HttpStatus.OK);
+        } catch (IllegalArgumentException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("{id}")

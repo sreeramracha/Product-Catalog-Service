@@ -1,5 +1,6 @@
 package com.project.productcatalogservice.security;
 
+import com.project.productcatalogservice.clients.AuthClient;
 import com.project.productcatalogservice.dto.AuthUserDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,11 +21,11 @@ import java.io.IOException;
 public class TokenValidationFilter extends OncePerRequestFilter {
 
     private final String authServerUrl;
-    private final RestTemplate restTemplate;
+    private final AuthClient authClient;
 
-    public TokenValidationFilter(@Value("${auth.service.url}") String authServerUrl, RestTemplateBuilder restTemplateBuilder) {
+    public TokenValidationFilter(@Value("${auth.service.url}") String authServerUrl, AuthClient authClient) {
         this.authServerUrl = authServerUrl;
-        this.restTemplate = restTemplateBuilder.build();
+        this.authClient = authClient;
     }
 
 
@@ -43,16 +44,7 @@ public class TokenValidationFilter extends OncePerRequestFilter {
 
         AuthUserDto authUserDto = null;
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", header);
-            ResponseEntity<AuthUserDto> responseEntity = restTemplate.exchange(
-                    this.authServerUrl + "/api/auth/validateToken",
-                    HttpMethod.GET,
-                    new HttpEntity<>(headers),
-                    AuthUserDto.class
-            );
-
-            authUserDto = responseEntity.getBody();
+            authUserDto = authClient.validateToken(header);
         } catch (HttpClientErrorException.Unauthorized e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;

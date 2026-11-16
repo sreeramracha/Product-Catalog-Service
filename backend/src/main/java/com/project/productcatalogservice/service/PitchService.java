@@ -1,5 +1,6 @@
 package com.project.productcatalogservice.service;
 
+import com.project.productcatalogservice.clients.GroqClient;
 import com.project.productcatalogservice.dto.GroqPitchResponseDto;
 import com.project.productcatalogservice.model.Product;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +19,15 @@ import java.util.Map;
 @Service
 public class PitchService {
 
-    private static final String GROQ_URL="https://api.groq.com/openai/v1/chat/completions";
     private static final String MODEL_NAME = "openai/gpt-oss-20b";
     private static final String SYSTEM_PROMPT = "You are a marketing copywriter for ShopNest, an online store. You write short push notifications that make people want to open the app.";
 
-    private final RestTemplate restTemplate;
+    private final GroqClient groqClient;
     private final String apiKey;
 
-    public PitchService(@Value("${groq.api-key}") String apiKey, RestTemplateBuilder restTemplateBuilder) {
+    public PitchService(@Value("${groq.api-key}") String apiKey, GroqClient groqClient) {
         this.apiKey = apiKey;
-        this.restTemplate = restTemplateBuilder.build();
+        this.groqClient = groqClient;
     }
 
     public String generatePitch(Product product) {
@@ -54,12 +54,9 @@ public class PitchService {
             );
 
 //            restTemplate.exchange(GROQ_URL, HttpMethod.POST, new HttpEntity<>(body, headers), String.class);
-            ResponseEntity<GroqPitchResponseDto> response = restTemplate.postForEntity(GROQ_URL, new HttpEntity<>(body, headers), GroqPitchResponseDto.class);
-            if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
-                return response.getBody().getChoices().get(0).getMessage().getContent();
-            }
-
-            throw new IllegalArgumentException("Pitch couldn't be generated");
+            GroqPitchResponseDto response = groqClient.chat(body);
+            String pitch = response.getChoices().get(0).getMessage().getContent();
+            return pitch;
 
         } catch (Exception e){
 //            System.out.println(e.getMessage());

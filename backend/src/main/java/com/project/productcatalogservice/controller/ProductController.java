@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
@@ -72,11 +73,7 @@ public class ProductController {
 
 
     @GetMapping("/{id}")
-    ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long id){
-        if (id<0){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+    ResponseEntity<ProductDto> getProductById(@PathVariable("id") UUID id){
         Product product = productService.getProductById(id);
 //        Product product = supplierService.getProductById(id);
         if (product == null){
@@ -87,11 +84,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}/pitch")
-    public ResponseEntity<ProductPitchDto> generatePitch(@PathVariable Long id){
-        if (id<0){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<ProductPitchDto> generatePitch(@PathVariable UUID id){
         Product product = productService.getProductById(id);
         if (product == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -112,11 +105,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> replaceProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
-        if (id <= 0) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<ProductDto> replaceProduct(@PathVariable UUID id, @RequestBody ProductDto productDto) {
         Product product = productService.replaceProduct(id, productDto);
         if (product == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -125,11 +114,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> patchProduct(@PathVariable Long id, @RequestBody ProductDto patch) {
-        if (id <= 0) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> patchProduct(@PathVariable UUID id, @RequestBody ProductDto patch) {
         try {
             Product product = productService.patchProduct(id, patch);
             if (product == null) {
@@ -142,7 +127,7 @@ public class ProductController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id){
+    public ResponseEntity<String> deleteProduct(@PathVariable UUID id){
 
         boolean isDeleted = productService.deleteProductById(id);
         if (isDeleted){

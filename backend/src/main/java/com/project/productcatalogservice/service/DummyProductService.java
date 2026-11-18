@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 //@Service("myDummyService") -> call this name in Qualifier
@@ -35,7 +36,7 @@ public class DummyProductService implements  IProductService{
     }
 
     @Override
-    public Product getProductById(Long id) {
+    public Product getProductById(UUID id) {
         log.info("Get product from 3rd party service: " + id);
         try {
             ResponseEntity<DummyJsonProductDto> dummyJsonProductDto = restTemplate.getForEntity("https://dummyjson.com/products/{id}", DummyJsonProductDto.class, id);
@@ -56,17 +57,17 @@ public class DummyProductService implements  IProductService{
     }
 
     @Override
-    public Product replaceProduct(Long id, ProductDto productDto) {
+    public Product replaceProduct(UUID id, ProductDto productDto) {
         throw new UnsupportedOperationException("Updating products from the external service is not supported");
     }
 
     @Override
-    public Product patchProduct(Long id, ProductDto patch) {
+    public Product patchProduct(UUID id, ProductDto patch) {
         throw new UnsupportedOperationException("Updating products from the external service is not supported");
     }
 
     @Override
-    public boolean deleteProductById(Long id) {
+    public boolean deleteProductById(UUID id) {
         return false;
     }
 
@@ -89,7 +90,7 @@ public class DummyProductService implements  IProductService{
 
     public Product from(DummyJsonProductDto dto){
         Product product = new Product();
-        product.setId(dto.getId());
+        // product.setId(dto.getId()); // supplier id is a Long, Product.id is a generated UUID
         product.setName(dto.getTitle());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());

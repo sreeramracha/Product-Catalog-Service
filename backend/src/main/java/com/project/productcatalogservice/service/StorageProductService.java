@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Primary
 @Service
@@ -37,7 +38,7 @@ public class StorageProductService implements IProductService {
 //    }
 
     @Override
-    public Product getProductById(Long id) {
+    public Product getProductById(UUID id) {
 //        Optional<Product> productOptional = productRepository.findById(id);
 //        if (productOptional.isEmpty()) {
 //            return null;
@@ -60,7 +61,7 @@ public class StorageProductService implements IProductService {
     }
 
     @Override
-    public Product replaceProduct(Long id, ProductDto productDto) {
+    public Product replaceProduct(UUID id, ProductDto productDto) {
         Product product = getProductById(id);
         if (product == null) {
             return null;
@@ -78,7 +79,7 @@ public class StorageProductService implements IProductService {
     }
 
     @Override
-    public Product patchProduct(Long id, ProductDto patch) {
+    public Product patchProduct(UUID id, ProductDto patch) {
         Product product = getProductById(id);
         if (product == null) {
             return null;
@@ -117,7 +118,7 @@ public class StorageProductService implements IProductService {
     }
 
     @Override
-    public boolean deleteProductById(Long id) {
+    public boolean deleteProductById(UUID id) {
         Product product = productRepository.findById(id).orElse(null);
         if (product == null) {
             return false;

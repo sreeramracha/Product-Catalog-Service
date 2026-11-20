@@ -7,13 +7,8 @@ on:
 
 jobs:
   test:
+    name: Backend Tests
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        service:
-          - ProductCatalogService
-          - UserAuthService
 
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +20,27 @@ jobs:
           cache: maven
 
       - name: Run tests
-        working-directory: ${{ matrix.service }}
+        working-directory: backend
         run: |
           mvn -B test -Dtest='!ProductCatalogServiceApplicationTests,!ProductSearchIntegrationTest'
+
+  frontend:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build

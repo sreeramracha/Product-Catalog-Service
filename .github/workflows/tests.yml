@@ -22,7 +22,7 @@ jobs:
       - name: Run tests
         working-directory: backend
         run: |
-          mvn -B test -Dtest='!ProductCatalogServiceApplicationTests,!ProductSearchIntegrationTest'
+          mvn -B test -Dtest='!ProductCatalogServiceApplicationTests,!ProductServiceIntegrationTests'
 
   frontend:
     name: Frontend Build
